@@ -389,6 +389,8 @@ public class RegistrationService {
         // Decrement slot count if was confirmed
         if (registration.getTimeSlot() != null && registration.getStatus() == RegistrationStatus.CONFIRMED) {
             timeSlotRepository.decrementCount(registration.getTimeSlot().getId());
+            promoteFromWaitlist(registration.getLabSession().getId()); // ← add this
+
         }
         registration.cancel();
         registration = registrationRepository.save(registration);
@@ -534,6 +536,8 @@ public class RegistrationService {
             registration.cancel();
             if (registration.getTimeSlot() != null) {
                 timeSlotRepository.decrementCount(registration.getTimeSlot().getId());
+                promoteFromWaitlist(registration.getLabSession().getId()); // ← add this
+
             }
         } else if (status == RegistrationStatus.COMPLETED) {
             registration.complete();
