@@ -1,0 +1,125 @@
+#spring:
+#  application:
+#    name: lab-registration-system
+#
+#  # H2 Database (Development)
+#  datasource:
+#    url: jdbc:h2:mem:labregdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+#    username: sa
+#    password:
+#    driver-class-name: org.h2.Driver
+#
+#  h2:
+#    console:
+#      enabled: true
+#      path: /h2-console
+#      settings:
+#        web-allow-others: true
+#
+#  jpa:
+#    hibernate:
+#      ddl-auto: create-drop
+#    show-sql: false
+#    properties:
+#      hibernate:
+#        dialect: org.hibernate.dialect.H2Dialect
+#        format_sql: true
+#    open-in-view: false
+#
+#  # Email Configuration (optional)
+#  mail:
+#    host: smtp.gmail.com
+#    port: 587
+#    username: ${MAIL_USERNAME:}
+#    password: ${MAIL_PASSWORD:}
+#    properties:
+#      mail:
+#        smtp:
+#          auth: true
+#          starttls:
+#            enable: true
+#
+## Server Configuration
+#server:
+#  port: 8080
+#  error:
+#    include-message: always
+#    include-binding-errors: always
+#
+## JWT Configuration
+#jwt:
+#  secret: YourSuperSecretKeyForJWTTokenGenerationThatIsAtLeast256BitsLong2024!
+#  expiration: 86400000  # 24 hours
+#  refresh-expiration: 604800000  # 7 days
+#
+## Application Configuration
+#app:
+#  cors:
+#    allowed-origins: http://localhost:3000,http://localhost:5173
+#
+## Logging
+#logging:
+#  level:
+#    com.labregistration: DEBUG
+#    org.springframework.security: INFO
+#    org.hibernate.SQL: DEBUG
+
+
+server:
+  port: 8080
+
+spring:
+  application:
+    name: lab-registration-system
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/lab_registration?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: root
+    password: EMMARESCUE
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    time-zone: UTC
+
+  # Email Configuration (configure with your SMTP server)
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:emmanuelderryshare@gmail.com}
+    password: ${MAIL_PASSWORD:xkgafkycoljlxvew}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+
+# JWT Configuration
+jwt:
+  secret: ${JWT_SECRET:yourSuperSecretKeyThatShouldBeAtLeast256BitsLongForHS256Algorithm12345}
+  access-token-expiration: 86400000    # 24 hours in milliseconds
+  refresh-token-expiration: 604800000   # 7 days in milliseconds
+
+# Application Configuration
+app:
+  frontend-url: ${FRONTEND_URL:http://localhost:3000}
+  slot-selection-deadline-hours: 24
+
+# Logging
+logging:
+  level:
+    com.labregistration: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
