@@ -18,12 +18,12 @@ public class CreateDepartmentRequest {
 
     private String description;
 
-    @NotNull(message = "Faculty ID is required")
+//    @NotNull(message = "Faculty ID is required")
     private Long facultyId;
 
 
-    @NotBlank(message = "Faculty is required")
-    private Faculty faculty;
+//
+//    private Faculty faculty;
 
     private String headOfDepartment;
 }
