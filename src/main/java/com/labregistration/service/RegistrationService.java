@@ -1,5 +1,6 @@
 package com.labregistration.service;
 
+import com.labregistration.dto.GroupMemberDto;
 import com.labregistration.dto.RegistrationDTO;
 import com.labregistration.dto.WeeklyNoteDTO;
 import com.labregistration.dto.request.CreateRegistrationRequest;
@@ -547,13 +548,22 @@ public class RegistrationService {
     }
 
 
-
-
-
-
-
-
-
-
+    public List<GroupMemberDto> getGroupMembers(Long timeSlotId) {
+        return registrationRepository.findByTimeSlotId(timeSlotId)
+                .stream()
+                .filter(r -> r.getStatus() == RegistrationStatus.CONFIRMED
+                        || r.getStatus() == RegistrationStatus.PENDING)
+                .map(r -> {
+                    User s = r.getStudent();
+                    return GroupMemberDto.builder()
+                            .id(s.getId())
+                            .fullName(s.getFullName())
+                            .studentId(s.getStudentId())
+                            .username(s.getUsername())
+                            .profilePictureUrl(null) // replace with s.getProfilePictureUrl() if the field exists
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
 
 }

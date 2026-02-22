@@ -1,5 +1,6 @@
 package com.labregistration.controller;
 
+import com.labregistration.dto.GroupMemberDto;
 import com.labregistration.dto.RegistrationDTO;
 import com.labregistration.dto.request.CreateRegistrationRequest;
 import com.labregistration.dto.response.ApiResponse;
@@ -90,5 +91,12 @@ public class RegistrationController {
             @RequestParam RegistrationStatus status) {
         return ResponseEntity.ok(ApiResponse.success("Status updated", 
                 registrationService.updateStatus(id, status)));
+    }
+
+
+
+    @GetMapping("/group-members/{timeSlotId}")
+    public ResponseEntity<List<GroupMemberDto>> getGroupMembers(@PathVariable Long timeSlotId) {
+        return ResponseEntity.ok(registrationService.getGroupMembers(timeSlotId));
     }
 }
