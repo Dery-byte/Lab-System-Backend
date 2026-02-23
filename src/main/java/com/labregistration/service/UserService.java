@@ -73,6 +73,35 @@ public class UserService implements UserDetailsService {
                 .map(userMapper::toDTO)
                 .collect(Collectors.toList());
     }
+//
+//    @Transactional
+//    public UserDTO createLabManager(CreateLabManagerRequest request) {
+//        if (userRepository.existsByEmail(request.getEmail())) {
+//            throw new BadRequestException("Email already registered");
+//        }
+//        if (userRepository.existsByStudentId(request.getStudentId())) {
+//            throw new BadRequestException("Staff ID already registered");
+//        }
+//
+//        User labManager = User.builder()
+//                .studentId(request.getStudentId())
+//                .email(request.getEmail())
+//                .password(passwordEncoder.encode(request.getPassword()))
+//                .firstName(request.getFirstName())
+//                .lastName(request.getLastName())
+//                .phoneNumber(request.getPhoneNumber())
+//                .level(Level.LEVEL_100) // Default, not really applicable for staff
+//                .role(Role.LAB_MANAGER)
+//                .enabled(true)
+//                .emailVerified(true)
+//                .build();
+//
+//        labManager = userRepository.save(labManager);
+//        log.info("Created lab manager: {}", labManager.getEmail());
+//        return userMapper.toDTO(labManager);
+//    }
+
+
 
     @Transactional
     public UserDTO createLabManager(CreateLabManagerRequest request) {
@@ -82,7 +111,13 @@ public class UserService implements UserDetailsService {
         if (userRepository.existsByStudentId(request.getStudentId())) {
             throw new BadRequestException("Staff ID already registered");
         }
-
+        // Resolve department before building the user
+        Department department = null;
+        if (request.getDepartmentId() != null) {
+            department = departmentRepository.findById(request.getDepartmentId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Department not found with id: " + request.getDepartmentId()));
+        }
         User labManager = User.builder()
                 .studentId(request.getStudentId())
                 .email(request.getEmail())
@@ -90,16 +125,20 @@ public class UserService implements UserDetailsService {
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .phoneNumber(request.getPhoneNumber())
-                .level(Level.LEVEL_100) // Default, not really applicable for staff
+                .department(department)               // ← was missing entirely
+                .level(Level.LEVEL_100)
                 .role(Role.LAB_MANAGER)
                 .enabled(true)
                 .emailVerified(true)
                 .build();
-
         labManager = userRepository.save(labManager);
         log.info("Created lab manager: {}", labManager.getEmail());
         return userMapper.toDTO(labManager);
     }
+
+
+
+
 
     @Transactional
     public UserDTO updateUser(Long id, UserDTO updateDTO) {
@@ -144,38 +183,26 @@ public class UserService implements UserDetailsService {
 
 
 
-//    public UserDTO updateLabManager(Long id, UpdateLabManagerRequest request) {
-//        User user = userRepository.findById(id)
-//                .orElseThrow(() -> new ResourceNotFoundException("Lab Manager not found with id: " + id));
-//
-//        user.setFirstName(request.getFirstName());
-//        user.setLastName(request.getLastName());
-//        user.setEmail(request.getEmail());
-//        user.setPhoneNumber(request.getPhoneNumber());
-//        user.setPassword(passwordEncoder.encode(request.getPassword()));
-//        User updated = userRepository.save(user);
-//        return userMapper.toDTO(updated);
-//    }
+// ─── AdminService.java  (updateLabManager method only) ───────────────────────
 
+public UserDTO updateLabManager(Long id, UpdateLabManagerRequest request) {
+    User user = userRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Lab Manager not found with id: " + id));
 
-    public UserDTO updateLabManager(Long id, UpdateLabManagerRequest request) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Lab Manager not found with id: " + id));
-
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setEmail(request.getEmail());
-        user.setPhoneNumber(request.getPhoneNumber());
-//        user.setEmployeeId(request.getEmployeeId());
+    user.setFirstName(request.getFirstName());
+    user.setLastName(request.getLastName());
+    user.setEmail(request.getEmail());
+    user.setPhoneNumber(request.getPhoneNumber());
+    if (request.getPassword() != null && !request.getPassword().isBlank()) {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-
-        if (request.getDepartment() != null) {
-            Department department = departmentRepository.findByName(request.getDepartment())
-                    .orElseThrow(() -> new ResourceNotFoundException("Department not found: " + request.getDepartment()));
-            user.setDepartment(department);
-        }
-
-        User updated = userRepository.save(user);
-        return userMapper.toDTO(updated);
     }
+    if (request.getDepartmentId() != null) {
+        Department department = departmentRepository.findById(request.getDepartmentId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Department not found with id: " + request.getDepartmentId()));
+        user.setDepartment(department);
+    }
+    User updated = userRepository.save(user);
+    return userMapper.toDTO(updated);
+}
 }

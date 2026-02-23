@@ -15,6 +15,7 @@ public class UpdateLabManagerRequest {
     private String email;
     private String phoneNumber;
     private String employeeId;
+    private Long departmentId;
 
 
     private String password;
