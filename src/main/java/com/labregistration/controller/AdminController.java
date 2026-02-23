@@ -6,6 +6,7 @@ import com.labregistration.dto.request.CreateLabManagerRequest;
 import com.labregistration.dto.response.ApiResponse;
 import com.labregistration.model.RegistrationStatus;
 import com.labregistration.model.SessionStatus;
+import com.labregistration.repository.CourseRepository;
 import com.labregistration.service.LabSessionService;
 import com.labregistration.service.RegistrationService;
 import com.labregistration.service.UserService;
@@ -29,6 +30,7 @@ public class AdminController {
     private final UserService userService;
     private final LabSessionService labSessionService;
     private final RegistrationService registrationService;
+    private final CourseRepository courseRepository;
 
     // Lab Manager Management
     @GetMapping("/lab-managers")
@@ -78,7 +80,9 @@ public class AdminController {
         stats.put("confirmedRegistrations", registrationService.countByStatus(RegistrationStatus.CONFIRMED));
         stats.put("waitlistedRegistrations", registrationService.countByStatus(RegistrationStatus.WAITLISTED));
         stats.put("completedRegistrations", registrationService.countByStatus(RegistrationStatus.COMPLETED));
-        
+        stats.put("totalCourses", registrationService.countByStatus(RegistrationStatus.COMPLETED));
+        stats.put("totalCourses",courseRepository.count());
+
         return ResponseEntity.ok(ApiResponse.success(stats));
     }
 

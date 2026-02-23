@@ -2,6 +2,7 @@ package com.labregistration.repository;
 
 import com.labregistration.model.Course;
 import com.labregistration.model.Level;
+import com.labregistration.model.Role;
 import com.labregistration.model.Semester;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -46,4 +47,15 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
            "(LOWER(c.courseCode) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
            "LOWER(c.courseName) LIKE LOWER(CONCAT('%', :search, '%')))")
     List<Course> searchActiveLabCourses(@Param("search") String search);
+
+
+
+
+    // Option 2 — custom JPQL if you need it in a @Query
+    @Query("SELECT COUNT(c) FROM Course c")
+    long countCourses();
+
+    // Option 3 — if you ever need to filter, e.g. by active status
+    @Query("SELECT COUNT(c) FROM Course c WHERE c.active = true")
+    long countActiveCourses();
 }
